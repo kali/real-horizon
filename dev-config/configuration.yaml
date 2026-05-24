@@ -1,0 +1,22 @@
+homeassistant:
+  name: real-horizon-dev
+  # Yosemite Valley -- iconic deep-valley horizon profile, good for dev/demo.
+  latitude: 37.7387
+  longitude: -119.5703
+  elevation: 1209
+  unit_system: metric
+  time_zone: America/Los_Angeles
+  country: US
+
+# Minimum set needed for UI + config-flow setup -- skip default_config to
+# avoid pulling in Matter/Bluetooth/etc.
+frontend:
+config:
+api:
+http:
+recorder:
+
+logger:
+  default: warning
+  logs:
+    custom_components.real_horizon: debug

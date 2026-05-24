@@ -1,0 +1,13 @@
+{
+  "domain": "real_horizon",
+  "name": "Real Horizon",
+  "version": "0.1.0",
+  "config_flow": true,
+  "iot_class": "cloud_polling",
+  "integration_type": "service",
+  "codeowners": ["@kali"],
+  "dependencies": ["http", "frontend"],
+  "documentation": "https://github.com/kali/real-horizon",
+  "issue_tracker": "https://github.com/kali/real-horizon/issues",
+  "requirements": ["astral==2.2"]
+}

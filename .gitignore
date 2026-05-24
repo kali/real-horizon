@@ -1,0 +1,33 @@
+__pycache__/
+*.py[cod]
+.venv/
+.python313/
+
+# HA dev config -- only configuration.yaml + custom_components symlink are tracked
+dev-config/.storage/
+dev-config/.HA_VERSION
+dev-config/.ha_run.lock
+dev-config/home-assistant*.log*
+dev-config/home-assistant*.db*
+dev-config/blueprints/
+dev-config/tts/
+dev-config/image/
+dev-config/.cloud/
+dev-config/secrets.yaml
+dev-config/real_horizon/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+
+# Prototype outputs (regenerated from the script; not source)
+prototype/cache/
+prototype/horizon*.png
+prototype/horizon*.svg
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Stray screenshots dropped at repo root
+Screenshot*.png
