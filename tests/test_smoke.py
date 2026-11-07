@@ -87,3 +87,12 @@ async def test_single_instance(hass: HomeAssistant, mock_pvgis) -> None:
     )
     assert result["type"] == "abort"
     assert result["reason"] == "already_configured"
+
+
+def test_large_profile_attributes_are_unrecorded() -> None:
+    """The recorder caps attributes at 16 KB; the list-valued ones must be excluded."""
+    from custom_components.real_horizon.sensor import LocalHorizonSensor
+
+    assert {"profile", "override_points", "sun_path_today", "moon_path_today"} <= (
+        LocalHorizonSensor._unrecorded_attributes
+    )

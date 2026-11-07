@@ -101,6 +101,16 @@ class LocalHorizonSensor(_Base):
 
     _attr_translation_key = "local_horizon"
     _attr_entity_registry_enabled_default = True
+    # The list-valued attributes are tens of KB and only the card (live state)
+    # needs them; keep them out of the recorder (16 KB attribute cap).
+    _unrecorded_attributes = frozenset({
+        "profile",
+        "override_points",
+        "crossings",
+        "sun_path_today",
+        "moon_path_today",
+        "moon_crossings",
+    })
 
     @property
     def native_value(self):
