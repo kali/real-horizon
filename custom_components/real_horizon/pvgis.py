@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from bisect import bisect_left
@@ -76,9 +77,12 @@ async def fetch_pvgis(
     force: bool = False,
 ) -> dict:
     """Return PVGIS horizon JSON, from disk cache if present unless `force`."""
-    if cache_file.exists() and not force:
+    if not force:
         try:
-            return json.loads(cache_file.read_text())
+            # File I/O off the event loop (HA flags blocking calls in async code).
+            return await asyncio.to_thread(_read_cache, cache_file)
+        except FileNotFoundError:
+            pass
         except (OSError, ValueError) as err:
             _LOGGER.warning("Bad PVGIS cache %s (%s); refetching", cache_file, err)
 
@@ -91,6 +95,14 @@ async def fetch_pvgis(
         resp.raise_for_status()
         payload = await resp.json()
 
+    await asyncio.to_thread(_write_cache, cache_file, payload)
+    return payload
+
+
+def _read_cache(cache_file: Path) -> dict:
+    return json.loads(cache_file.read_text())
+
+
+def _write_cache(cache_file: Path, payload: dict) -> None:
     cache_file.parent.mkdir(parents=True, exist_ok=True)
     cache_file.write_text(json.dumps(payload))
-    return payload
