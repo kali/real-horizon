@@ -72,6 +72,9 @@ The horizon comes from PVGIS, which samples SRTM at roughly 90 m resolution.
 That captures ridges, hills, and cliffs reliably, but misses close-range
 obstructions (trees, neighbouring buildings). Expect agreement with reality
 to within a few minutes in open terrain, ~10 min in dense local cover.
+In a narrow valley the 90 m grid can also invent or flatten ridges by
+several degrees. If that happens where you live, measure the horizon yourself
+and add [horizon overrides](#horizon-overrides).
 
 The sun position itself is computed with `astral` and is sub-second accurate.
 The moon position uses a low-precision Meeus algorithm (main periodic terms)
@@ -90,6 +93,37 @@ configuration.
 If you change those values later, remove the integration and add it back so
 the cached horizon profile is refetched. (A `lat`/`lon`-change reload is on
 the todo list.)
+
+### Horizon overrides
+
+Where PVGIS is wrong for your spot, you can correct it with your own
+measurements. Go to **Settings → Devices & services → Real Horizon →
+Configure** and paste either:
+
+- an export from the iOS [Theodolite](https://hrtapps.com/theodolite/) app.
+  Aim at the skyline, take a reading, repeat, then share the log as text.
+  The app has to be set to **True North**. The review step tells you if any
+  readings were taken against magnetic north. Or:
+- a plain list, one `azimuth, elevation` pair per line in degrees, with
+  azimuth measured from true north. Lines starting with `#` are ignored.
+
+  ```
+  # azimuth, elevation
+  82, 9.0
+  90, 12.3
+  105, 13.7
+  ```
+
+Your measurements are joined by straight lines. Between two neighbouring
+readings that are at most *max gap* apart (default 30°), that line
+**replaces** PVGIS. Everywhere else PVGIS stays as it is. So you only have to
+measure the part of the skyline that's wrong. Repeated readings at the same
+azimuth are averaged. A reading with no neighbour within the max gap is
+ignored. Before saving, a review step lists the arcs that will be replaced
+and any readings that will be ignored.
+
+The card draws your measurements as small hollow dots over the silhouette.
+To remove the overrides, clear the text field and submit.
 
 ## License
 

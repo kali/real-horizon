@@ -41,6 +41,7 @@ class RealHorizonCard extends HTMLElement {
     const moonAz = a.moon_azimuth;
     const moonEl = a.moon_elevation;
     const moonPhase = a.moon_phase ?? 0;
+    const overridePoints = a.override_points || [];
 
     if (!profile.length) {
       this._mount(`<div class="rh-error">No horizon profile yet.</div>`);
@@ -113,6 +114,12 @@ class RealHorizonCard extends HTMLElement {
         }" class="rh-moon-path"/>`)
         .join("");
     })();
+
+    // User-measured horizon points (options-flow overrides), drawn as small
+    // hollow dots on top of the silhouette so they can be compared to it.
+    const overrideMarkers = overridePoints.map((p) =>
+      `<circle cx="${p.az}" cy="${-p.elev}" r="1.1" class="rh-override"/>`
+    ).join("");
 
     // Crossing markers (no time labels -- summary at top already shows them).
     const sunCrossMarkers = crossings.map((c) => {
@@ -233,6 +240,7 @@ class RealHorizonCard extends HTMLElement {
               ${moonPolylines}
               ${sunPts ? `<polyline points="${sunPts}" class="rh-sun-path"/>` : ""}
               <polygon points="${silPts}" class="rh-silhouette"/>
+              ${overrideMarkers}
               ${sunCrossMarkers}
               ${moonCrossMarkers}
               ${moonNow}
@@ -320,6 +328,7 @@ class RealHorizonCard extends HTMLElement {
         .rh-moon-path { fill: none; stroke: #e2e8f0; stroke-width: 0.8;
                         stroke-dasharray: 1.4 1.4; opacity: 0.8;
                         stroke-linejoin: round; }
+        .rh-override { fill: none; stroke: #fde68a; stroke-width: 0.4; opacity: 0.85; }
         .rh-grid { stroke: rgba(255,255,255,0.13); stroke-width: 0.15; stroke-dasharray: 1 1.5; }
         /* SVG-internal label classes were dropped; cardinals now live in .rh-axis HTML. */
         .rh-sun-now { filter: drop-shadow(0 0 1.6px rgba(251,191,36,0.95)); }

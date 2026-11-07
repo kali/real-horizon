@@ -17,6 +17,12 @@ from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, UPDATE_INTERVAL
 from .moon import moon_position
+from .overrides import (
+    DEFAULT_MAX_GAP_DEG,
+    OverridePoint,
+    apply_overrides,
+    parse_theodolite_log,
+)
 from .pvgis import HorizonProfile, cache_path, fetch_pvgis
 from .sun import find_crossings, find_crossings_window, first_rise_last_set, sun_pos_fn
 
@@ -59,7 +65,14 @@ class RealHorizonCoordinator(DataUpdateCoordinator[RealHorizonData]):
     observer: Observer
     tz: ZoneInfo
 
-    def __init__(self, hass: HomeAssistant, lat: float, lon: float) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        lat: float,
+        lon: float,
+        override_log: str = "",
+        override_max_gap_deg: float = DEFAULT_MAX_GAP_DEG,
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,
@@ -68,6 +81,10 @@ class RealHorizonCoordinator(DataUpdateCoordinator[RealHorizonData]):
         )
         self._lat = lat
         self._lon = lon
+        self._override_max_gap = override_max_gap_deg
+        self.override_points: list[OverridePoint] = (
+            parse_theodolite_log(override_log) if override_log else []
+        )
         self._cached_day: date | None = None
         self._cached_crossings: list[tuple[datetime, str]] = []
         self._cached_path: list[tuple[datetime, float, float]] = []
@@ -85,7 +102,18 @@ class RealHorizonCoordinator(DataUpdateCoordinator[RealHorizonData]):
         pvgis_json = await fetch_pvgis(
             session, self._lat, self._lon, cache_path(cfg_dir, self._lat, self._lon)
         )
-        self.horizon = HorizonProfile.from_pvgis_json(pvgis_json)
+        base = HorizonProfile.from_pvgis_json(pvgis_json)
+        if self.override_points:
+            self.horizon = apply_overrides(
+                base, self.override_points, self._override_max_gap
+            )
+            _LOGGER.info(
+                "Applied %d override point(s) to horizon (max_gap=%.0f°)",
+                len(self.override_points),
+                self._override_max_gap,
+            )
+        else:
+            self.horizon = base
         self.observer = Observer(latitude=self._lat, longitude=self._lon, elevation=0.0)
         self.tz = ZoneInfo(self.hass.config.time_zone)
         _LOGGER.info(

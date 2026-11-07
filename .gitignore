@@ -31,3 +31,10 @@ prototype/horizon*.svg
 
 # Stray screenshots dropped at repo root
 Screenshot*.png
+Capture d*.png
+
+# Local working data (DEM rasters, personal measurements, exports)
+/rasters_*.tar.gz
+/stellarium-landscape.zip
+/theodolite
+prototype/raymarch_cache/

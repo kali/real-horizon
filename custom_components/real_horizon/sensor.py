@@ -112,6 +112,10 @@ class LocalHorizonSensor(_Base):
             "latitude": self.coordinator._lat,
             "longitude": self.coordinator._lon,
             "profile": self.coordinator.horizon.to_list(),
+            "override_points": [
+                {"az": p.azimuth_deg, "elev": p.elevation_deg}
+                for p in self.coordinator.override_points
+            ],
             "sun_azimuth": round(self._d.sun_azimuth, 3),
             "sun_elevation": round(self._d.sun_elevation, 3),
             "crossings": [

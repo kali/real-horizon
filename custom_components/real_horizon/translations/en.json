@@ -10,16 +10,48 @@
       "already_configured": "Real Horizon is already set up."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Real Horizon overrides",
+        "description": "Paste a Theodolite-app log here, or one `azimuth, elevation` pair per line, to correct PVGIS where it misses local terrain (trees, buildings, close ridges).\n\n**Currently configured:** {n_parsed} point(s), {n_segments} interpolation segment(s) covering {covered_deg}° of horizon. Isolated points (no neighbour within max gap): {n_isolated} -- {isolated_list}.\n\nBetween two consecutive points whose azimuth gap is at most the value below, your readings linearly interpolated *replace* PVGIS. Outside any annotated arc, PVGIS is kept as-is.",
+        "data": {
+          "override_log": "Theodolite log or az, elev list",
+          "override_max_gap_deg": "Maximum azimuth gap to interpolate (degrees)"
+        }
+      },
+      "review": {
+        "title": "Review parsed overrides",
+        "description": "**{n_parsed}** point(s) parsed.\n\n**{n_segments}** segment(s) will be applied, covering **{covered_deg}°** of the horizon:\n{segment_list}\n\n**{n_isolated}** isolated point(s) will be ignored: {isolated_list}.\n\n**{n_magnetic}** reading(s) use magnetic headings. These are off by your local magnetic declination; set Theodolite to True North and re-measure if this is not 0.\n\nRepeated readings at the same azimuth are averaged. To include isolated points, add a neighbour within the max-gap or raise the max-gap value. Click Submit to save, or close to go back without saving."
+      }
+    },
+    "error": {
+      "no_points_parsed": "No (azimuth, elevation) pairs could be parsed from that text.",
+      "no_segments_form": "All points are isolated (no two within the max-gap value). Add more points or raise the max-gap."
+    }
+  },
   "entity": {
     "sensor": {
-      "true_sunrise": { "name": "True sunrise" },
-      "true_sunset": { "name": "True sunset" },
-      "sun_clearance": { "name": "Sun clearance" },
-      "horizon_at_sun": { "name": "Horizon at sun azimuth" },
-      "local_horizon": { "name": "Local horizon profile" }
+      "true_sunrise": {
+        "name": "True sunrise"
+      },
+      "true_sunset": {
+        "name": "True sunset"
+      },
+      "sun_clearance": {
+        "name": "Sun clearance"
+      },
+      "horizon_at_sun": {
+        "name": "Horizon at sun azimuth"
+      },
+      "local_horizon": {
+        "name": "Local horizon profile"
+      }
     },
     "binary_sensor": {
-      "above_local_horizon": { "name": "Sun above local horizon" }
+      "above_local_horizon": {
+        "name": "Sun above local horizon"
+      }
     }
   }
 }

@@ -11,7 +11,12 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    OPT_OVERRIDE_LOG,
+    OPT_OVERRIDE_MAX_GAP_DEG,
+    OPT_OVERRIDE_MAX_GAP_DEG_DEFAULT,
+)
 from .coordinator import RealHorizonCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,16 +34,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: RealHorizonConfigEntry) 
     lat = entry.data["latitude"]
     lon = entry.data["longitude"]
 
-    coordinator = RealHorizonCoordinator(hass, lat, lon)
+    coordinator = RealHorizonCoordinator(
+        hass,
+        lat,
+        lon,
+        override_log=entry.options.get(OPT_OVERRIDE_LOG, ""),
+        override_max_gap_deg=entry.options.get(
+            OPT_OVERRIDE_MAX_GAP_DEG, OPT_OVERRIDE_MAX_GAP_DEG_DEFAULT
+        ),
+    )
     await coordinator.async_load_horizon()
     await coordinator.async_config_entry_first_refresh()
 
     entry.runtime_data = coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     await _async_register_card(hass)
     return True
+
+
+async def _async_options_updated(hass: HomeAssistant, entry: RealHorizonConfigEntry) -> None:
+    """Reload the integration whenever the options flow saves new values."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: RealHorizonConfigEntry) -> bool:

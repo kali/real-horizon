@@ -19,3 +19,8 @@ HORIZON_REFRESH_INTERVAL = timedelta(days=7)
 
 # Used in the disk cache path and as part of the config entry's unique_id.
 COORD_PRECISION = 4  # decimal places, ~11 m
+
+# Options-flow keys.
+OPT_OVERRIDE_LOG = "override_log"
+OPT_OVERRIDE_MAX_GAP_DEG = "override_max_gap_deg"
+OPT_OVERRIDE_MAX_GAP_DEG_DEFAULT = 30.0
