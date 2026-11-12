@@ -179,10 +179,14 @@ class RealHorizonCard extends HTMLElement {
     const moonVisible = moonEl !== undefined && moonEl > horizonAt(moonAz);
     const moonNow = moonVisible ? this._moonSvg(moonAz, -moonEl, 2.6, moonPhase) : "";
 
-    // Summary header.
+    // Summary header. Times follow the HA user time-format preference
     const fmtTime = (iso) => {
       const d = new Date(iso);
-      return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+      const tf = this._hass.locale.time_format;
+      const opts = { hour: "2-digit", minute: "2-digit" };
+      if (tf === "24") opts.hour12 = false;
+      else if (tf === "12") opts.hour12 = true;
+      return d.toLocaleTimeString(this._hass.locale.language || undefined, opts);
     };
     const sunRise = crossings.find((c) => c.kind === "rise");
     const sunSet = [...crossings].reverse().find((c) => c.kind === "set");
